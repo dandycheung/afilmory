@@ -1,20 +1,18 @@
+import { RootPortal, RootPortalProvider } from '@afilmory/ui'
 import clsx from 'clsx'
 import { useEffect, useMemo, useState } from 'react'
 import { RemoveScroll } from 'react-remove-scroll'
 
 import { NotFound } from '~/components/common/NotFound'
 import { PhotoViewer } from '~/components/ui/photo-viewer'
-import { RootPortal } from '~/components/ui/portal'
-import { RootPortalProvider } from '~/components/ui/portal/provider'
-import { useTitle } from '~/hooks/common'
 import { useContextPhotos, usePhotoViewer } from '~/hooks/usePhotoViewer'
+import { useTitle } from '~/hooks/useTitle'
 import { deriveAccentFromSources } from '~/lib/color'
 
 export const Component = () => {
   const photoViewer = usePhotoViewer()
   const photos = useContextPhotos()
 
-  // const ref = useRef<HTMLDivElement>(null)
   const [ref, setRef] = useState<HTMLElement | null>(null)
   const rootPortalValue = useMemo(
     () => ({
@@ -39,6 +37,18 @@ export const Component = () => {
           thumbnailUrl: current.thumbnailUrl,
         })
         if (!isCancelled) {
+          const $css = document.createElement('style')
+          $css.textContent = `
+         * {
+             transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+            }
+          `
+          document.head.append($css)
+
+          setTimeout(() => {
+            $css.remove()
+          }, 100)
+
           setAccentColor(color ?? null)
         }
       } catch {
@@ -69,7 +79,6 @@ export const Component = () => {
             photoViewer.isOpen
               ? 'fixed inset-0 z-9999'
               : 'pointer-events-none fixed inset-0 z-40',
-            '**:transition-colors **:duration-200',
           )}
         >
           <PhotoViewer
